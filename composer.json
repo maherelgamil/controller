@@ -1,6 +1,6 @@
 {
     "name": "buzzylab/controller",
-    "description": "painless controller creating",
+    "description": "Painless controller creating trait",
     "type": "library",
     "license": "MIT",
     "authors": [
