@@ -3,8 +3,7 @@
 namespace Buzzylab\Controller\Traits;
 
 /**
- * Class ControllerTrait
- * @package Buzzylab\Controller\Traits
+ * Class ControllerTrait.
  */
 trait ControllerTrait
 {
@@ -57,7 +56,7 @@ trait ControllerTrait
      */
     protected function getPackageNameParameters()
     {
-        list($vendor , $name) = explode('/' , $this->getPackage());
+        list($vendor, $name) = explode('/', $this->getPackage());
 
         return compact($vendor, $name);
     }
@@ -85,7 +84,7 @@ trait ControllerTrait
     {
         $packageName = $this->getPackageName();
 
-        return in_array($packageName,  $this->singularExceptional) ? $this->getEntity() : str_singular($packageName);
+        return in_array($packageName, $this->singularExceptional) ? $this->getEntity() : str_singular($packageName);
     }
 
     /**
@@ -93,7 +92,7 @@ trait ControllerTrait
      */
     protected function getDottedPackageName()
     {
-        return str_replace("/" , "." , $this->getPackage());
+        return str_replace('/', '.', $this->getPackage());
     }
 
     /**
@@ -105,7 +104,7 @@ trait ControllerTrait
     }
 
     /**
-     * Set entity
+     * Set entity.
      *
      * @param $entity
      *
@@ -113,18 +112,19 @@ trait ControllerTrait
      */
     protected function setEntity($entity)
     {
-        $this->entity = $entity ;
+        $this->entity = $entity;
 
         return $this;
     }
 
     /**
-     * Get entity
+     * Get entity.
+     *
      * @return mixed
      */
     protected function getEntity()
     {
-        return isset($this->entity) ? $this->entity : null ;
+        return isset($this->entity) ? $this->entity : null;
     }
 
     /**
@@ -132,11 +132,12 @@ trait ControllerTrait
      */
     protected function getSingularEntity()
     {
-        return in_array($this->getEntity(),  $this->singularExceptional) ? $this->getEntity() : str_singular($this->getEntity());
+        return in_array($this->getEntity(), $this->singularExceptional) ? $this->getEntity() : str_singular($this->getEntity());
     }
 
     /**
      * @param array $requests
+     *
      * @return $this
      */
     protected function setRequestValidation(array  $requests)
@@ -147,36 +148,37 @@ trait ControllerTrait
     }
 
     /**
-     * Get entity
+     * Get entity.
      *
      * @return mixed
      */
     protected function getRequestValidation()
     {
-        return isset($this->requestsValidation) ? $this->requestsValidation : null ;
+        return isset($this->requestsValidation) ? $this->requestsValidation : null;
     }
 
     /**
-     * Set entity
+     * Set entity.
+     *
      * @param $folder
      *
      * @return $this
      */
     protected function setNamespaceFolder($folder)
     {
-        $this->viewsFolder = $folder ;
+        $this->viewsFolder = $folder;
 
         return $this;
     }
 
     /**
-     * Get entity
+     * Get entity.
      *
      * @return mixed
      */
     protected function getNamespaceFolder()
     {
-        return isset($this->viewsFolder) ? $this->viewsFolder : 'backend' ;
+        return isset($this->viewsFolder) ? $this->viewsFolder : 'backend';
     }
 
     /**
@@ -219,7 +221,7 @@ trait ControllerTrait
         // Get list of items
         ${$this->getEntity()} = $this->{$this->getEntity()}->get();
 
-        if(request()->expectsJson()){
+        if (request()->expectsJson()) {
             return ${$this->getEntity()};
         }
 
@@ -250,7 +252,8 @@ trait ControllerTrait
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
+     *
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -273,15 +276,14 @@ trait ControllerTrait
     /**
      * Shows the form.
      *
-     * @param  string $action
-     * @param  int    $id
+     * @param string $action
+     * @param int    $id
      *
      * @return mixed
      */
     protected function showForm($action, $id = null)
     {
-        if (! ${$this->getSingularEntity()} = $this->getOrNew($id)) {
-
+        if (!${$this->getSingularEntity()} = $this->getOrNew($id)) {
             return redirect()
                 ->route($this->getRouteNameByAction('index'))
                 ->withErrors($this->getMessagePhrase('not_found'), compact('id'));
@@ -294,8 +296,8 @@ trait ControllerTrait
     /**
      * Processes the form.
      *
-     * @param  string $action
-     * @param  int    $id
+     * @param string $action
+     * @param int    $id
      *
      * @return \Illuminate\Http\RedirectResponse
      */
@@ -308,12 +310,11 @@ trait ControllerTrait
         $request = isset($allRequestsValidation[$action]) ? app($allRequestsValidation[$action]) : request();
 
         // Lest's store the item
-        if($entityMessage = $this->updateOrCreate($action, $request, $id)){
-
-            if(request()->expectsJson()){
+        if ($entityMessage = $this->updateOrCreate($action, $request, $id)) {
+            if (request()->expectsJson()) {
                 response([
                     'status' => 'success',
-                    'data' => $this->getMessagePhrase("message.success.{$action}"),
+                    'data'   => $this->getMessagePhrase("message.success.{$action}"),
                 ]);
             }
 
@@ -322,10 +323,10 @@ trait ControllerTrait
                 ->withSuccess($this->getMessagePhrase("message.success.{$action}"));
         }
 
-        if(request()->expectsJson()){
+        if (request()->expectsJson()) {
             response([
                 'status' => 'success',
-                'data' => $entityMessage,
+                'data'   => $entityMessage,
             ]);
         }
 
@@ -337,6 +338,7 @@ trait ControllerTrait
      *
      * @param  $item
      * @param  $type
+     *
      * @return \Illuminate\Http\Response
      */
     public function destroy($item, $type = 'id')
@@ -345,22 +347,24 @@ trait ControllerTrait
         $messageType = $this->createModel()->where($type, $item)->delete() ? 'Success' : 'Errors';
 
         // Get delete result boolean type
-        $messageMethod = 'with' . $messageType;
+        $messageMethod = 'with'.$messageType;
 
-        if(request()->expectsJson()){
+        if (request()->expectsJson()) {
             response([
                 'status' => 'success',
-                'data' => $this->getMessagePhrase("message.".str_singular(strtolower($messageType)).".delete"),
+                'data'   => $this->getMessagePhrase('message.'.str_singular(strtolower($messageType)).'.delete'),
             ]);
         }
+
         return redirect()
             ->route($this->getRouteNameByAction('index'))
-            ->{$messageMethod}($this->getMessagePhrase("message.".str_singular(strtolower($messageType)).".delete"));
+            ->{$messageMethod}($this->getMessagePhrase('message.'.str_singular(strtolower($messageType)).'.delete'));
     }
 
     /**
-     * @param null $item
+     * @param null   $item
      * @param string $type
+     *
      * @return ControllerTrait
      */
     protected function getOrNew($item = null, $type = 'id')
@@ -374,9 +378,10 @@ trait ControllerTrait
      * @param $action
      * @param $request
      * @param null $id
+     *
      * @return mixed
      */
-    protected function updateOrCreate($action, $request, $id = null )
+    protected function updateOrCreate($action, $request, $id = null)
     {
         $data = $request->except(['_method', '_token']);
 
@@ -384,5 +389,4 @@ trait ControllerTrait
             $this->createModel()->{$action}($data) :
             $this->createModel()->where('id', $id)->{$action}($data);
     }
-
 }
