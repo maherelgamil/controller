@@ -4,7 +4,6 @@ namespace Buzzylab\Controller\Traits;
 
 /**
  * Class ControllerTrait.
- * @package Buzzylab\Controller\Traits
  */
 trait ControllerTrait
 {
