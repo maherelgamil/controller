@@ -198,7 +198,8 @@ trait ControllerTrait
      */
     protected function getViewPath($viewName)
     {
-        return "{$this->getPackage()}::{$this->getNamespaceFolder()}.{$this->getEntity()}.{$viewName}";
+        return (isset($this->package) ? $package = "{$this->getPackage()}::" : null).
+            "{$this->getNamespaceFolder()}.{$this->getEntity()}.{$viewName}";
     }
 
     /**
