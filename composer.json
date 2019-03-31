@@ -1,0 +1,22 @@
+{
+    "name": "maherelgamil/controller",
+    "description": "Painless controller creating trait",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "maherelgamil",
+            "email": "maherbusnes@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0.0",
+        "laravel/framework": "^5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "MaherElGamil\\Controller\\": "src"
+        }
+    },
+    "minimum-stability": "dev"
+}
