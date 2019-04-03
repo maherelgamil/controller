@@ -2,14 +2,58 @@
 
 namespace MaherElGamil\Controller\Traits;
 
+use Illuminate\Support\Str;
+
 /**
  * Class ControllerTrait.
  */
 trait ControllerTrait
 {
+    /**
+     * @var null
+     */
+    protected $model = null;
+
+    /**
+     * @var null
+     */
+    protected $entity = null;
+
+    /**
+     * @var array
+     */
     protected $singularExceptional = [
         'media',
     ];
+
+    protected function getCalledClassNamespace()
+    {
+        return get_called_class();
+    }
+
+    protected function getCalledClassName()
+    {
+        $currentClassNameArray = explode('\\', get_called_class());
+
+        return array_pop($currentClassNameArray);
+    }
+
+    protected function setModelNameSpace($namespace)
+    {
+        $this->modelNameSpace = $namespace;
+    }
+
+    protected function getModelNameSpace()
+    {
+        return $this->modelNameSpace ?? "App\\";
+    }
+
+    protected function getCalledModel()
+    {
+        return $this->getModelNameSpace().Str::singular(
+            str_replace('Controller', '', $this->getCalledClassName())
+        );
+    }
 
     /**
      * @param $model
@@ -28,7 +72,7 @@ trait ControllerTrait
      */
     protected function getModel()
     {
-        return $this->model;
+        return $this->model ?? $this->getCalledModel();
     }
 
     /**
@@ -48,7 +92,7 @@ trait ControllerTrait
      */
     protected function getPackage()
     {
-        return $this->package;
+        return $this->package ?? null ;
     }
 
     /**
@@ -103,6 +147,13 @@ trait ControllerTrait
         return app($this->getModel());
     }
 
+    protected function getCalledEntity()
+    {
+        return strtolower(
+            str_replace('Controller', '', $this->getCalledClassName())
+        );
+    }
+
     /**
      * Set entity.
      *
@@ -124,7 +175,7 @@ trait ControllerTrait
      */
     protected function getEntity()
     {
-        return isset($this->entity) ? $this->entity : null;
+        return $this->entity ?? $this->getCalledEntity();
     }
 
     /**
@@ -171,6 +222,16 @@ trait ControllerTrait
         return $this;
     }
 
+    protected function getCalledNamespaceFolder()
+    {
+        $currentClassNameArray = explode('\\', get_called_class());
+
+        $first_folder = strtolower($currentClassNameArray[count($currentClassNameArray)-3]);
+        $second_folder = strtolower($currentClassNameArray[count($currentClassNameArray)-2]);
+
+        return "{$first_folder}.{$second_folder}";
+    }
+
     /**
      * Get entity.
      *
@@ -178,7 +239,7 @@ trait ControllerTrait
      */
     protected function getNamespaceFolder()
     {
-        return isset($this->viewsFolder) ? $this->viewsFolder : 'backend';
+        return $this->viewsFolder ?? $this->getCalledNamespaceFolder();
     }
 
     /**
@@ -188,7 +249,9 @@ trait ControllerTrait
      */
     protected function getRouteNameByAction($action)
     {
-        return "{$this->getDottedPackageName()}.{$this->getNamespaceFolder()}.{$this->getEntity()}.{$action}";
+        $dottedPackage = $this->getPackage() ? $this->getDottedPackageName().'.' : null ;
+
+        return "{$dottedPackage}{$this->getNamespaceFolder()}.{$this->getEntity()}.{$action}";
     }
 
     /**
@@ -209,7 +272,10 @@ trait ControllerTrait
      */
     protected function getMessagePhrase($message)
     {
-        return trans("{$this->getPackage()}::".str_plural($this->getEntity())."/message.{$message}");
+        return trans(
+            ($this->getPackage() ? "{$this->getPackage()}::" : null ).
+            str_plural($this->getEntity())."/message.{$message}"
+        );
     }
 
     /**
@@ -284,10 +350,11 @@ trait ControllerTrait
      */
     protected function showForm($action, $id = null)
     {
-        if (!${$this->getSingularEntity()} = $this->getOrNew($id)) {
+        if (! ${$this->getSingularEntity()} = $this->getOrNew($id)) {
+
             return redirect()
-                ->route($this->getRouteNameByAction('index'))
-                ->withErrors($this->getMessagePhrase('not_found'), compact('id'));
+                ->route($this->getRouteNameByAction('all'))
+                ->withErrors([$this->getMessagePhrase('not_found'), compact('id')]);
         }
 
         // Show the page
@@ -320,7 +387,7 @@ trait ControllerTrait
             }
 
             return redirect()
-                ->route($this->getRouteNameByAction('index'))
+                ->route($this->getRouteNameByAction('all'))
                 ->withSuccess($this->getMessagePhrase("message.success.{$action}"));
         }
 
@@ -358,7 +425,7 @@ trait ControllerTrait
         }
 
         return redirect()
-            ->route($this->getRouteNameByAction('index'))
+            ->route($this->getRouteNameByAction('all'))
             ->{$messageMethod}($this->getMessagePhrase('message.'.str_singular(strtolower($messageType)).'.delete'));
     }
 
