@@ -150,7 +150,7 @@ trait ControllerTrait
     protected function getCalledEntity()
     {
         return strtolower(
-            str_replace('Controller', '', $this->getCalledClassName())
+            Str::snake(str_replace('Controller', '', $this->getCalledClassName()))
         );
     }
 
